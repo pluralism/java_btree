@@ -6,11 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryBTreeTest {
     @Test
@@ -281,6 +277,12 @@ public class InMemoryBTreeTest {
         assertEquals(2, rootFirstChild.getN());
         assertTrue(IntStream.range(0, rootFirstChild.getN())
                 .mapToObj(i -> rootFirstChild.getKeys().get(i).getKey()).allMatch(v -> v.equals(1)));
+    }
+
+    @Test
+    void deleteValueFromEmptyTreeShouldNotThrowExceptions() {
+        final InMemoryBTree<Integer> tree = new InMemoryBTree<>(2);
+        assertDoesNotThrow(() -> tree.delete(2));
     }
 
     @Test
