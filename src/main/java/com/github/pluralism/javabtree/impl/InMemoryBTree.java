@@ -9,14 +9,23 @@ import java.util.Optional;
 import java.util.Stack;
 
 /**
- * @see <a href="https://en.wikipedia.org/wiki/B-tree">B-tree (Wikipedia)</a>
- * @author André Pinheiro <andrepdpinheiro@gmail.com>
+ * B-Tree is a self-balancing search tree.
+ * Unlike a binary tree, each node in a B-Tree can have more than 2 children. The number of children depends on a
+ * parameter T, that is referred as the tree minimum degree.
+ * Most of the operations in a B-Tree, including searches, insertions, deletions can be completed in logarithmic time,
+ * requiring O(h) disk accesses, where h is the height of the tree.
+ * B-Tree are commonly used in database indexing.
+ * <p>
+ *  @see <a href="https://en.wikipedia.org/wiki/B-tree">B-tree (Wikipedia)</a>
+ *  <br>
+ *  @author André Pinheiro
+ * </p>
  */
 public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
     private BTreeNode root;
 
     /**
-     * Minimum degree of the B-Tree (must be even and greater than or equal to 2)
+     * Minimum degree of the B-Tree (must be even and greater than or equal to 2).
      *
      * Every node other than the root must have at least T - 1 keys. Every internal node other than the root
      * must have at least T children.
@@ -145,27 +154,33 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
                 x.keys.set(i, predecessor); // replace "k" by "k'"
                 delete(x.children.get(i), predecessor); // recursively delete "k'"
             }
-            // If "y" (x.children[i]) has fewer than T keys, examine the child "z" (x.children[i + 1]) that follows
-            // "k" (x.key[i]) in node "x".
-            // If "z" (x.children[i + 1]) has at least T keys, then find the successor "k'" of "k" in the subtree
-            // rooted at "z" (x.children[i + 1]). Recursively delete "k'", and replace k by "k'" in "x".
+            /*
+             * If "y" (x.children[i]) has fewer than T keys, examine the child "z" (x.children[i + 1]) that follows
+             * "k" (x.key[i]) in node "x".
+             * If "z" (x.children[i + 1]) has at least T keys, then find the successor "k'" of "k" in the subtree
+             * rooted at "z" (x.children[i + 1]). Recursively delete "k'", and replace k by "k'" in "x".
+             */
             else if (x.children.get(i + 1).n >= T) {
                 final BTreeNodeEntry successor = findSuccessor(x.children.get(i + 1));
                 x.keys.set(i, successor);
                 delete(x.children.get(i + 1), successor);
             }
-            // Otherwise, if both "y" (x.children[i]) and "z" (x.children[i + 1]) have less than T keys, merge "k" and
-            // all of "z" (x.children[i + 1]) into "y" (x.children[i]), so that "x" loses both "k" and
-            // the pointer to "z" (x.children[i + 1]), and y (x.children[i]) now contains 2T - 1 keys.
-            // Finally free "z" (x.children[i + 1]) and recursively delete "k" from "y" (x.children[i]).
+            /*
+             * Otherwise, if both "y" (x.children[i]) and "z" (x.children[i + 1]) have less than T keys, merge "k" and
+             * all of "z" (x.children[i + 1]) into "y" (x.children[i]), so that "x" loses both "k" and
+             * the pointer to "z" (x.children[i + 1]), and y (x.children[i]) now contains 2T - 1 keys.
+             * Finally free "z" (x.children[i + 1]) and recursively delete "k" from "y" (x.children[i]).
+             */
             else {
                 merge(x, i);
                 delete(x.children.get(i), k);
             }
         }
-        // If the key "k" is not present in internal node "x", determine the root x.children[i] of the appropriate
-        // subtree that must contain "k". If x.children[i] has only T - 1 keys (minimum), we need to perform additional
-        // steps to guarantee that we descend to a node containing at least T keys.
+        /*
+         * If the key "k" is not present in internal node "x", determine the root x.children[i] of the appropriate
+         * subtree that must contain "k". If x.children[i] has only T - 1 keys (minimum), we need to perform additional
+         * steps to guarantee that we descend to a node containing at least T keys.
+         */
         else {
             BTreeNode newChild = x.children.get(i);
             if (x.children.get(i).n < T) {
@@ -425,9 +440,6 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
         node.n = node.n + 1;
     }
 
-    /**
-     * Inserts key {@param k} into node {@param x}, which is assumed to be nonfull when the function is called.
-     */
     private void insertNonFull(final BTreeNode x, final BTreeNodeEntry k) {
         int i = x.n - 1;
 
@@ -439,9 +451,7 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
 
             x.keys.set(i + 1, k);
             x.n = x.n + 1;
-            return;
         } else {
-            // Determine the child of x to which recursion descends
             while (i >= 0 && k.compareTo(x.keys.get(i)) < 0) {
                 i--;
             }

@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryBTreeImplementationTest {
     @Test
@@ -66,5 +64,11 @@ public class InMemoryBTreeImplementationTest {
         tree.delete(2);
 
         assertFalse(tree.contains(2));
+    }
+
+    @Test
+    void deleteFromEmptyTreeShouldNotThrowExceptions() {
+        final InMemoryBTree.Implementation<Integer> tree = new InMemoryBTree.Implementation<>(2);
+        assertDoesNotThrow(() -> tree.delete(2));
     }
 }
