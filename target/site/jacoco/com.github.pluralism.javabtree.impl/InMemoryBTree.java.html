@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InMemoryBTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java_btree</a> &gt; <a href="index.source.html" class="el_package">com.github.pluralism.javabtree.impl</a> &gt; <span class="el_source">InMemoryBTree.java</span></div><h1>InMemoryBTree.java</h1><pre class="source lang-java linenums">package com.github.pluralism.javabtree.impl;
+
+import com.github.pluralism.javabtree.BTree;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
+
+/**
+ * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/B-tree&quot;&gt;B-tree (Wikipedia)&lt;/a&gt;
+ * @author André Pinheiro &lt;andrepdpinheiro@gmail.com&gt;
+ */
+public class InMemoryBTree&lt;NodeType extends Comparable&lt;NodeType&gt;&gt; {
+    private BTreeNode root;
+
+    /**
+     * Minimum degree of the B-Tree (must be even and greater than or equal to 2)
+     *
+     * Every node other than the root must have at least T - 1 keys. Every internal node other than the root
+     * must have at least T children.
+     *
+     * Every node may contain at most 2T - 1 keys. Therefore, an internal node may have at most 2T children.
+     * A node is said to be full if it contains exactly 2T - 1 keys.
+     */
+    private int T;
+
+<span class="fc" id="L29">    class BTreeNode {</span>
+        private boolean leaf;
+        private int n;
+        private List&lt;BTreeNodeEntry&gt; keys;
+        private List&lt;BTreeNode&gt; children;
+
+        int getN() {
+<span class="fc" id="L36">            return n;</span>
+        }
+
+        List&lt;BTreeNodeEntry&gt; getKeys() {
+<span class="fc" id="L40">            return keys;</span>
+        }
+
+        List&lt;BTreeNode&gt; getChildren() {
+<span class="fc" id="L44">            return children;</span>
+        }
+
+        boolean isLeaf() {
+<span class="fc" id="L48">            return leaf;</span>
+        }
+
+        boolean isFull() {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            return n == 2 * T - 1;</span>
+        }
+    }
+
+    class BTreeNodeEntry {
+        private NodeType key;
+
+<span class="fc" id="L59">        private BTreeNodeEntry(final NodeType key) {</span>
+<span class="fc" id="L60">            this.key = key;</span>
+<span class="fc" id="L61">        }</span>
+
+        int compareTo(final BTreeNodeEntry other) {
+<span class="fc" id="L64">            return key.compareTo(other.key);</span>
+        }
+
+        NodeType getKey() {
+<span class="fc" id="L68">            return key;</span>
+        }
+    }
+
+    class SearchNodeResult {
+        private BTreeNode node;
+        private int index;
+
+<span class="fc" id="L76">        SearchNodeResult(final BTreeNode node, final int index) {</span>
+<span class="fc" id="L77">            this.node = node;</span>
+<span class="fc" id="L78">            this.index = index;</span>
+<span class="fc" id="L79">        }</span>
+
+        BTreeNode getNode() {
+<span class="fc" id="L82">            return node;</span>
+        }
+
+        int getIndex() {
+<span class="fc" id="L86">            return index;</span>
+        }
+    }
+
+<span class="fc" id="L90">    InMemoryBTree(final int T) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (T &lt; 2) {</span>
+<span class="fc" id="L92">            throw new IllegalArgumentException(&quot;Tree degree must be equal of greater than 2&quot;);</span>
+        }
+<span class="fc" id="L94">        this.T = T;</span>
+<span class="fc" id="L95">        allocateRootNode();</span>
+<span class="fc" id="L96">    }</span>
+
+    BTreeNode getRoot() {
+<span class="fc" id="L99">        return root;</span>
+    }
+
+    private void allocateRootNode() {
+<span class="fc" id="L103">        final BTreeNode node = allocateNode();</span>
+<span class="fc" id="L104">        node.leaf = true;</span>
+<span class="fc" id="L105">        node.n = 0;</span>
+
+<span class="fc" id="L107">        this.root = node;</span>
+<span class="fc" id="L108">    }</span>
+
+    private BTreeNode allocateNode() {
+<span class="fc" id="L111">        final BTreeNode node = new BTreeNode();</span>
+<span class="fc" id="L112">        node.leaf = false;</span>
+<span class="fc" id="L113">        node.n = 0;</span>
+<span class="fc" id="L114">        node.keys = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L115">        node.children = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L117">        node.keys.addAll(Collections.nCopies(2 * T - 1, null));</span>
+<span class="fc" id="L118">        node.children.addAll(Collections.nCopies(2 * T, null));</span>
+
+<span class="fc" id="L120">        return node;</span>
+    }
+
+    public void delete(final NodeType k) {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        if (contains(k)) {</span>
+<span class="fc" id="L125">            delete(root, new BTreeNodeEntry(k));</span>
+        }
+<span class="fc" id="L127">    }</span>
+
+    private void delete(final BTreeNode x, final BTreeNodeEntry k) {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (x.leaf) {</span>
+<span class="fc" id="L131">            deleteFromLeafNode(x, k);</span>
+<span class="fc" id="L132">            return;</span>
+        }
+
+<span class="fc" id="L135">        int i = 0;</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">        while (i &lt; x.n &amp;&amp; x.keys.get(i).compareTo(k) &lt; 0) {</span>
+<span class="fc" id="L137">            i++;</span>
+        }
+
+        // The key &quot;k&quot; is in node &quot;x&quot; and &quot;x&quot; is an internal node (non-leaf node).
+<span class="fc bfc" id="L141" title="All 4 branches covered.">        if (i &lt; x.n &amp;&amp; x.keys.get(i).compareTo(k) == 0) {</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">            if (x.children.get(i).n &gt;= T) {</span>
+                // Find the predecessor &quot;k'&quot; of &quot;k&quot; in the subtree rooted at &quot;y&quot; (x.children[i])
+<span class="nc" id="L144">                final BTreeNodeEntry predecessor = findPredecessor(x.children.get(i));</span>
+<span class="nc" id="L145">                x.keys.set(i, predecessor); // replace &quot;k&quot; by &quot;k'&quot;</span>
+<span class="nc" id="L146">                delete(x.children.get(i), predecessor); // recursively delete &quot;k'&quot;</span>
+<span class="nc" id="L147">            }</span>
+            // If &quot;y&quot; (x.children[i]) has fewer than T keys, examine the child &quot;z&quot; (x.children[i + 1]) that follows
+            // &quot;k&quot; (x.key[i]) in node &quot;x&quot;.
+            // If &quot;z&quot; (x.children[i + 1]) has at least T keys, then find the successor &quot;k'&quot; of &quot;k&quot; in the subtree
+            // rooted at &quot;z&quot; (x.children[i + 1]). Recursively delete &quot;k'&quot;, and replace k by &quot;k'&quot; in &quot;x&quot;.
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            else if (x.children.get(i + 1).n &gt;= T) {</span>
+<span class="fc" id="L153">                final BTreeNodeEntry successor = findSuccessor(x.children.get(i + 1));</span>
+<span class="fc" id="L154">                x.keys.set(i, successor);</span>
+<span class="fc" id="L155">                delete(x.children.get(i + 1), successor);</span>
+<span class="fc" id="L156">            }</span>
+            // Otherwise, if both &quot;y&quot; (x.children[i]) and &quot;z&quot; (x.children[i + 1]) have less than T keys, merge &quot;k&quot; and
+            // all of &quot;z&quot; (x.children[i + 1]) into &quot;y&quot; (x.children[i]), so that &quot;x&quot; loses both &quot;k&quot; and
+            // the pointer to &quot;z&quot; (x.children[i + 1]), and y (x.children[i]) now contains 2T - 1 keys.
+            // Finally free &quot;z&quot; (x.children[i + 1]) and recursively delete &quot;k&quot; from &quot;y&quot; (x.children[i]).
+            else {
+<span class="fc" id="L162">                merge(x, i);</span>
+<span class="fc" id="L163">                delete(x.children.get(i), k);</span>
+            }
+        }
+        // If the key &quot;k&quot; is not present in internal node &quot;x&quot;, determine the root x.children[i] of the appropriate
+        // subtree that must contain &quot;k&quot;. If x.children[i] has only T - 1 keys (minimum), we need to perform additional
+        // steps to guarantee that we descend to a node containing at least T keys.
+        else {
+<span class="fc" id="L170">            BTreeNode newChild = x.children.get(i);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            if (x.children.get(i).n &lt; T) {</span>
+                // Delete from a sibling if x.children[i] has only T - 1 keys.
+<span class="fc" id="L173">                newChild = deleteFromSibling(x, i);</span>
+            }
+
+            // Finish by recursing on the appropriate child of &quot;x&quot;
+<span class="fc" id="L177">            delete(newChild, k);</span>
+        }
+<span class="fc" id="L179">    }</span>
+
+    private void deleteFromLeafNode(final BTreeNode x, final BTreeNodeEntry k) {
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        for (int i = 0; i &lt; x.n; i++) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (x.keys.get(i).compareTo(k) == 0) {</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">                for (int j = i + 1; j &lt; x.n; j++) {</span>
+<span class="fc" id="L185">                    x.keys.set(j - 1, x.keys.get(j));</span>
+<span class="fc" id="L186">                    x.keys.set(j, null);</span>
+                }
+
+<span class="fc" id="L189">                x.n = x.n - 1;</span>
+<span class="fc" id="L190">                return;</span>
+            }
+        }
+<span class="nc" id="L193">    }</span>
+
+    private BTreeNode deleteFromSibling(final BTreeNode parentNode, int childIndex) {
+<span class="fc" id="L196">        final BTreeNode child = parentNode.children.get(childIndex);</span>
+
+<span class="pc bpc" id="L198" title="1 of 4 branches missed.">        if (childIndex &gt; 0 &amp;&amp; parentNode.children.get(childIndex - 1).n &gt;= T) {</span>
+<span class="fc" id="L199">            stealNodeFromPreviousChild(parentNode, childIndex);</span>
+<span class="pc bpc" id="L200" title="2 of 4 branches missed.">        } else if (childIndex != child.n &amp;&amp; parentNode.children.get(childIndex + 1).n &gt;= T) {</span>
+<span class="fc" id="L201">            stealNodeFromNextChild(parentNode, childIndex);</span>
+        } else {
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            final boolean isLastChild = childIndex == child.n;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            if (isLastChild) {</span>
+<span class="nc" id="L205">                merge(parentNode, childIndex - 1);</span>
+<span class="nc" id="L206">                return parentNode.children.get(childIndex - 1);</span>
+            } else {
+<span class="nc" id="L208">                merge(parentNode, childIndex);</span>
+            }
+        }
+
+<span class="fc" id="L212">        return child;</span>
+    }
+
+    private void stealNodeFromPreviousChild(final BTreeNode parentNode, int childIndex) {
+<span class="fc" id="L216">        final BTreeNode child = parentNode.children.get(childIndex);</span>
+<span class="fc" id="L217">        final BTreeNode previousChild = parentNode.children.get(childIndex - 1);</span>
+
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        for (int i = child.n - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L220">            child.keys.set(i + 1, child.keys.get(i));</span>
+        }
+
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">        if (!child.leaf) {</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">            for (int i = child.n; i &gt;= 0; i--) {</span>
+<span class="nc" id="L225">                child.children.set(i + 1, child.children.get(i));</span>
+            }
+        }
+
+<span class="fc" id="L229">        child.keys.set(0, parentNode.keys.get(childIndex - 1));</span>
+
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        if (!child.leaf) {</span>
+<span class="nc" id="L232">            child.children.set(0, previousChild.children.get(previousChild.n));</span>
+        }
+
+<span class="fc" id="L235">        parentNode.keys.set(childIndex - 1, previousChild.keys.get(previousChild.n - 1));</span>
+<span class="fc" id="L236">        previousChild.keys.set(previousChild.n - 1, null);</span>
+
+<span class="fc" id="L238">        child.n = child.n + 1;</span>
+<span class="fc" id="L239">        previousChild.n = previousChild.n - 1;</span>
+<span class="fc" id="L240">    }</span>
+
+    private void stealNodeFromNextChild(final BTreeNode parentNode, int childIndex) {
+<span class="fc" id="L243">        final BTreeNode child = parentNode.children.get(childIndex);</span>
+<span class="fc" id="L244">        final BTreeNode nextChild = parentNode.children.get(childIndex + 1);</span>
+
+<span class="fc" id="L246">        child.keys.set(child.n, parentNode.keys.get(childIndex));</span>
+
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">        if (!child.leaf) {</span>
+<span class="fc" id="L249">            child.children.set(child.n + 1, nextChild.children.get(0));</span>
+        }
+
+<span class="fc" id="L252">        parentNode.keys.set(childIndex, nextChild.keys.get(0));</span>
+
+<span class="fc bfc" id="L254" title="All 2 branches covered.">        for (int i = 0; i &lt; nextChild.n; i++) {</span>
+<span class="fc" id="L255">            nextChild.keys.set(i, nextChild.keys.get(i + 1));</span>
+<span class="fc" id="L256">            nextChild.keys.set(i + 1, null);</span>
+        }
+
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        if (!nextChild.leaf) {</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">            for (int i = 0; i &lt;= nextChild.n; i++) {</span>
+<span class="fc" id="L261">                nextChild.children.set(i, nextChild.children.get(i + 1));</span>
+<span class="fc" id="L262">                nextChild.children.set(i + 1, null);</span>
+            }
+        }
+
+<span class="fc" id="L266">        child.n = child.n + 1;</span>
+<span class="fc" id="L267">        nextChild.n = nextChild.n - 1;</span>
+<span class="fc" id="L268">    }</span>
+
+    private void merge(final BTreeNode x, final int index) {
+<span class="fc" id="L271">        final BTreeNode y = x.children.get(index);</span>
+<span class="fc" id="L272">        final BTreeNode z = x.children.get(index + 1);</span>
+<span class="fc" id="L273">        final BTreeNodeEntry k = x.keys.get(index);</span>
+
+<span class="fc" id="L275">        y.keys.set(T - 1, k);</span>
+
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        for (int i = 0; i &lt; z.n; i++) {</span>
+<span class="fc" id="L278">            y.keys.set(i + T, z.keys.get(i));</span>
+        }
+
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">        if (!y.leaf) {</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">            for (int i = 0; i &lt;= z.n; i++) {</span>
+<span class="nc" id="L283">                y.children.set(i + T, z.children.get(i));</span>
+            }
+        }
+
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        for (int i = index + 1; i &lt; x.n; i++) {</span>
+<span class="fc" id="L288">            x.keys.set(i - 1, x.keys.get(i));</span>
+<span class="fc" id="L289">            x.keys.set(i, null);</span>
+        }
+
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        for (int i = index + 2; i &lt;= x.n; i++) {</span>
+<span class="fc" id="L293">            x.children.set(i - 1, x.children.get(i));</span>
+<span class="fc" id="L294">            x.children.set(i, null);</span>
+        }
+
+<span class="fc" id="L297">        y.n = y.n + z.n + 1;</span>
+<span class="fc" id="L298">        x.n = x.n - 1;</span>
+<span class="fc" id="L299">    }</span>
+
+    private BTreeNodeEntry findPredecessor(final BTreeNode child) {
+<span class="nc" id="L302">        BTreeNode current = child;</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        while (!current.leaf) {</span>
+<span class="nc" id="L304">            current = current.children.get(child.n);</span>
+        }
+
+<span class="nc" id="L307">        return current.keys.get(current.n - 1);</span>
+    }
+
+    private BTreeNodeEntry findSuccessor(final BTreeNode child) {
+<span class="fc" id="L311">        BTreeNode current = child;</span>
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        while (!current.leaf) {</span>
+<span class="nc" id="L313">            current = current.children.get(0);</span>
+        }
+
+<span class="fc" id="L316">        return current.keys.get(0);</span>
+    }
+
+    public boolean contains(final NodeType k) {
+<span class="fc" id="L320">        return searchNode(k).isPresent();</span>
+    }
+
+    public Optional&lt;NodeType&gt; get(NodeType k) {
+<span class="fc" id="L324">        final Optional&lt;SearchNodeResult&gt; nodeOptional = searchNode(k);</span>
+<span class="fc" id="L325">        return nodeOptional.map(tSearchNodeResult -&gt; tSearchNodeResult.node.keys.get(tSearchNodeResult.index).key);</span>
+    }
+
+    public Optional&lt;SearchNodeResult&gt; searchNode(final NodeType k) {
+<span class="fc" id="L329">        final BTreeNodeEntry nodeEntry = new BTreeNodeEntry(k);</span>
+<span class="fc" id="L330">        final Stack&lt;BTreeNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L331">        stack.push(root);</span>
+
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">        while (!stack.isEmpty()) {</span>
+<span class="fc" id="L334">            final BTreeNode currentNode = stack.pop();</span>
+
+<span class="fc" id="L336">            int i = 0;</span>
+<span class="fc bfc" id="L337" title="All 4 branches covered.">            while (i &lt; currentNode.n &amp;&amp; nodeEntry.compareTo(currentNode.keys.get(i)) &gt; 0) {</span>
+<span class="fc" id="L338">                i++;</span>
+            }
+
+<span class="fc bfc" id="L341" title="All 4 branches covered.">            if (i &lt; currentNode.n &amp;&amp; nodeEntry.compareTo(currentNode.keys.get(i)) == 0) {</span>
+<span class="fc" id="L342">                return Optional.of(new SearchNodeResult(currentNode, i));</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">            } else if (currentNode.leaf) {</span>
+<span class="fc" id="L344">                return Optional.empty();</span>
+            }
+
+<span class="fc" id="L347">            stack.push(currentNode.children.get(i));</span>
+<span class="fc" id="L348">        }</span>
+
+<span class="nc" id="L350">        return Optional.empty();</span>
+    }
+
+    public NodeType getMinValue() {
+<span class="fc" id="L354">        BTreeNode currentNode = root;</span>
+
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        while (!currentNode.leaf) {</span>
+<span class="fc" id="L357">            currentNode = currentNode.children.get(0);</span>
+        }
+
+<span class="fc" id="L360">        return currentNode.keys.get(0).key;</span>
+    }
+
+    public NodeType getMaxValue() {
+<span class="fc" id="L364">        BTreeNode currentNode = root;</span>
+
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        while (!currentNode.leaf) {</span>
+<span class="fc" id="L367">            currentNode = currentNode.children.get(currentNode.n);</span>
+        }
+
+<span class="fc" id="L370">        return currentNode.keys.get(currentNode.n - 1).key;</span>
+    }
+
+    public void insert(final NodeType k) {
+<span class="fc" id="L374">        final BTreeNode root = this.root;</span>
+<span class="fc" id="L375">        final BTreeNodeEntry bTreeNodeEntry = new BTreeNodeEntry(k);</span>
+
+<span class="fc bfc" id="L377" title="All 2 branches covered.">        if (root.isFull()) {</span>
+<span class="fc" id="L378">            final BTreeNode s = allocateNode();</span>
+<span class="fc" id="L379">            this.root = s;</span>
+<span class="fc" id="L380">            s.leaf = false;</span>
+<span class="fc" id="L381">            s.n = 0;</span>
+<span class="fc" id="L382">            s.children.set(0, root);</span>
+
+<span class="fc" id="L384">            splitChild(s, 0);</span>
+<span class="fc" id="L385">            insertNonFull(s, bTreeNodeEntry);</span>
+<span class="fc" id="L386">        } else {</span>
+<span class="fc" id="L387">            insertNonFull(root, bTreeNodeEntry);</span>
+        }
+<span class="fc" id="L389">    }</span>
+
+    private void splitChild(final BTreeNode node, final int childIndex) {
+<span class="fc" id="L392">        final BTreeNode z = allocateNode();</span>
+<span class="fc" id="L393">        final BTreeNode y = node.children.get(childIndex);</span>
+
+<span class="fc" id="L395">        z.leaf = y.leaf;</span>
+<span class="fc" id="L396">        z.n = T - 1;</span>
+
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (int j = 0; j &lt; T - 1; j++) {</span>
+<span class="fc" id="L399">            z.keys.set(j, y.keys.get(j + T));</span>
+<span class="fc" id="L400">            y.keys.set(j + T, null);</span>
+        }
+
+<span class="fc bfc" id="L403" title="All 2 branches covered.">        if (!y.leaf) {</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">            for (int j = 0; j &lt; T; j++) {</span>
+<span class="fc" id="L405">                z.children.set(j, y.children.get(j + T));</span>
+<span class="fc" id="L406">                y.children.set(j + T, null);</span>
+            }
+        }
+
+<span class="fc" id="L410">        y.n = T - 1;</span>
+
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">        for (int j = node.n; j &gt;= childIndex + 1; j--) {</span>
+<span class="nc" id="L413">            node.children.set(j + 1, node.children.get(j));</span>
+<span class="nc" id="L414">            node.children.set(j, null);</span>
+        }
+
+<span class="fc" id="L417">        node.children.set(childIndex + 1, z);</span>
+
+<span class="pc bpc" id="L419" title="1 of 2 branches missed.">        for (int j = node.n - 1; j &gt;= childIndex; j--) {</span>
+<span class="nc" id="L420">            node.keys.set(j + 1, node.keys.get(j));</span>
+        }
+<span class="fc" id="L422">        node.keys.set(childIndex, y.keys.get(T - 1));</span>
+
+<span class="fc" id="L424">        y.keys.set(T - 1, null);</span>
+<span class="fc" id="L425">        node.n = node.n + 1;</span>
+<span class="fc" id="L426">    }</span>
+
+    /**
+     * Inserts key {@param k} into node {@param x}, which is assumed to be nonfull when the function is called.
+     */
+    private void insertNonFull(final BTreeNode x, final BTreeNodeEntry k) {
+<span class="fc" id="L432">        final Stack&lt;BTreeNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L433">        stack.push(x);</span>
+
+<span class="pc bpc" id="L435" title="1 of 2 branches missed.">        while (!stack.isEmpty()) {</span>
+<span class="fc" id="L436">            BTreeNode currentNode = stack.pop();</span>
+
+<span class="fc" id="L438">            int i = currentNode.n - 1;</span>
+
+<span class="fc bfc" id="L440" title="All 2 branches covered.">            if (currentNode.leaf) {</span>
+<span class="pc bpc" id="L441" title="1 of 4 branches missed.">                while (i &gt;= 0 &amp;&amp; k.compareTo(currentNode.keys.get(i)) &lt; 0) {</span>
+<span class="nc" id="L442">                    currentNode.keys.set(i + 1, currentNode.keys.get(i));</span>
+<span class="nc" id="L443">                    i--;</span>
+                }
+
+<span class="fc" id="L446">                currentNode.keys.set(i + 1, k);</span>
+<span class="fc" id="L447">                currentNode.n = currentNode.n + 1;</span>
+<span class="fc" id="L448">                return;</span>
+            } else {
+                // Determine the child of x to which recursion descends
+<span class="fc bfc" id="L451" title="All 4 branches covered.">                while (i &gt;= 0 &amp;&amp; k.compareTo(currentNode.keys.get(i)) &lt; 0) {</span>
+<span class="fc" id="L452">                    i--;</span>
+                }
+<span class="fc" id="L454">                i++;</span>
+
+<span class="fc bfc" id="L456" title="All 2 branches covered.">                if (currentNode.children.get(i).isFull()) {</span>
+<span class="fc" id="L457">                    splitChild(currentNode, i);</span>
+                    // Determine which of the two children is now the the correct one to descend to.
+<span class="pc bpc" id="L459" title="1 of 2 branches missed.">                    if (k.compareTo(currentNode.keys.get(i)) &gt; 0) {</span>
+<span class="fc" id="L460">                        i++;</span>
+                    }
+                }
+
+<span class="fc" id="L464">                stack.push(currentNode.children.get(i));</span>
+            }
+<span class="fc" id="L466">        }</span>
+<span class="nc" id="L467">    }</span>
+
+    public static class Implementation&lt;NodeType extends Comparable&lt;NodeType&gt;&gt; implements BTree&lt;NodeType&gt; {
+        final InMemoryBTree&lt;NodeType&gt; tree;
+
+<span class="fc" id="L472">        public Implementation(final int T) {</span>
+<span class="fc" id="L473">            tree = new InMemoryBTree&lt;&gt;(T);</span>
+<span class="fc" id="L474">        }</span>
+
+        @Override
+        public void insert(final NodeType k) {
+<span class="fc" id="L478">            tree.insert(k);</span>
+<span class="fc" id="L479">        }</span>
+
+        @Override
+        public void delete(final NodeType k) {
+<span class="fc" id="L483">            tree.delete(k);</span>
+<span class="fc" id="L484">        }</span>
+
+        @Override
+        public boolean contains(final NodeType k) {
+<span class="fc" id="L488">            return tree.contains(k);</span>
+        }
+
+        @Override
+        public Optional&lt;NodeType&gt; get(final NodeType k) {
+<span class="fc" id="L493">            return tree.get(k);</span>
+        }
+
+        @Override
+        public NodeType getMinValue() {
+<span class="fc" id="L498">            return tree.getMinValue();</span>
+        }
+
+        @Override
+        public NodeType getMaxValue() {
+<span class="fc" id="L503">            return tree.getMaxValue();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
