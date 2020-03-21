@@ -1,0 +1,2 @@
+[![Build Status](https://travis-ci.com/pluralism/java_btree.svg?branch=master)](https://travis-ci.com/pluralism/java_btree)
+[![codecov](https://codecov.io/gh/pluralism/java_btree/branch/master/graph/badge.svg)](https://codecov.io/gh/pluralism/java_btree)
