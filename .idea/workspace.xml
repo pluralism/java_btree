@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1c81c01e-681a-455a-a46c-f2be0bc931bd" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,7 +207,7 @@
       <workItem from="1584730801890" duration="3330000" />
       <workItem from="1584788425574" duration="4151000" />
       <workItem from="1584796826572" duration="1928000" />
-      <workItem from="1584799618619" duration="51000" />
+      <workItem from="1584799618619" duration="218000" />
     </task>
     <task id="LOCAL-00001" summary="Add missing javadoc. Add missing tests.">
       <created>1584734140168</created>
@@ -258,7 +258,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584798731221</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="update .travis.yml">
+      <created>1584799679436</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1584799679436</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -272,7 +279,8 @@
     <MESSAGE value="Update .travis.yml dist" />
     <MESSAGE value="Update .travis.yml to upload code coverage data to codecov" />
     <MESSAGE value="Add README" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add README" />
+    <MESSAGE value="update .travis.yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="update .travis.yml" />
   </component>
   <component name="WindowStateProjectService">
     <state x="540" y="186" width="800" height="684" key="#Project_Structure" timestamp="1584730857480">
@@ -314,10 +322,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="711" y="265" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040@0.0.1920.1040" timestamp="1584793240710" />
-    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584798730710">
+    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584799678828">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584798730710" />
+    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584799678828" />
     <state width="1847" height="562" key="DebuggerActiveHint" timestamp="1584788776585">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -387,10 +395,10 @@
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
     <state x="801" y="490" width="377" height="133" key="ReplaceDuplicatesPrompt/70.27.1850.1053@70.27.1850.1053" timestamp="1584135390944" />
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584798732367">
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584799680620">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584798732367" />
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584799680620" />
     <state x="0" y="350" key="com.intellij.ide.util.TipDialog" timestamp="1584799623985">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -408,10 +416,10 @@
     <state x="425" y="265" width="1795" height="610" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1584796951643" />
     <state x="1348" y="231" width="672" height="695" key="run.anything.popup/1278.1080.1920.1080/1348.0.572.1080@1348.0.572.1080" timestamp="1584551821985" />
     <state x="659" y="252" width="672" height="677" key="run.anything.popup/70.27.1850.1053@70.27.1850.1053" timestamp="1584394808501" />
-    <state x="0" y="229" width="1918" height="671" key="search.everywhere.popup" timestamp="1584794159543">
+    <state x="0" y="229" width="1918" height="671" key="search.everywhere.popup" timestamp="1584799808170">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="0" y="229" width="1918" height="671" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1584794159543" />
+    <state x="0" y="229" width="1918" height="671" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1584799808170" />
     <state x="1348" y="238" width="672" height="696" key="search.everywhere.popup/1278.1080.1920.1080/1348.0.572.1080@1348.0.572.1080" timestamp="1584551776078" />
     <state x="658" y="259" width="672" height="678" key="search.everywhere.popup/70.27.1850.1053@70.27.1850.1053" timestamp="1584394889661" />
   </component>
