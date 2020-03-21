@@ -25,19 +25,35 @@ public class InMemoryBTreeImplementationTest {
     }
 
     @Test
-    void getMinValueShouldReturnTheMinimumValue() {
+    void getMinShouldReturnTheMinimumValue() {
         final InMemoryBTree.Implementation<Integer> tree = new InMemoryBTree.Implementation<>(2);
         IntStream.range(1, 11).forEach(tree::insert);
 
-        assertEquals(1, tree.getMinValue());
+        final Optional<Integer> min = tree.getMin();
+        assertTrue(min.isPresent());
+        assertEquals(1, min.get());
     }
 
     @Test
-    void getMaxValueShouldReturnTheMaximumValue() {
+    void getMinOnEmptyTreeShouldReturnEmptyOptional() {
+        final InMemoryBTree.Implementation<Integer> tree = new InMemoryBTree.Implementation<>(2);
+        assertEquals(Optional.empty(), tree.getMin());
+    }
+
+    @Test
+    void getMaxShouldReturnTheMaximumValue() {
         final InMemoryBTree.Implementation<Integer> tree = new InMemoryBTree.Implementation<>(2);
         IntStream.range(1, 11).forEach(tree::insert);
 
-        assertEquals(10, tree.getMaxValue());
+        final Optional<Integer> max = tree.getMax();
+        assertTrue(max.isPresent());
+        assertEquals(10, max.get());
+    }
+
+    @Test
+    void getMaxOnEmptyTreeShouldReturnEmptyOptional() {
+        final InMemoryBTree.Implementation<Integer> tree = new InMemoryBTree.Implementation<>(2);
+        assertEquals(Optional.empty(), tree.getMax());
     }
 
     @Test

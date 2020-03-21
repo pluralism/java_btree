@@ -37,22 +37,21 @@ public interface BTree<T extends Comparable<T>> {
      * implementation.
      *
      * @param k value to be extracted from the B-Tree
-     * @return {@link Optional#empty()} if the value is not on the B-Tree, otherwise returns an {@link Optional}
-     * with the value from the B-Tree.
+     * @return an empty {@code Optional} if the value is not on the B-Tree, otherwise returns an {@code Optional<T>}.
      */
     Optional<T> get(T k);
 
     /**
      * Get the minimum value in the B-Tree according to the {@link Comparable#compareTo(Object)} implementation.
      *
-     * @return minimum value in the B-Tree.
+     * @return an empty {@code Optional} if the tree is empty, otherwise returns an {@code Optional<T>}.
      */
-    T getMinValue();
+    Optional<T> getMin();
 
     /**
      * Get the maximum value in the B-Tree according to the {@link Comparable#compareTo(Object)} implementation.
      *
-     * @return maximum value in the B-Tree.
+     * @return an empty {@code Optional} if the tree is empty, otherwise returns an {@code Optional<T>}.
      */
-    T getMaxValue();
+    Optional<T> getMax();
 }

@@ -365,24 +365,24 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
         return Optional.empty();
     }
 
-    public NodeType getMinValue() {
+    public Optional<NodeType> getMin() {
         BTreeNode currentNode = root;
 
         while (!currentNode.leaf) {
             currentNode = currentNode.children.get(0);
         }
 
-        return currentNode.keys.get(0).key;
+        return Optional.ofNullable(currentNode.keys.get(0)).map(v -> v.key);
     }
 
-    public NodeType getMaxValue() {
+    public Optional<NodeType> getMax() {
         BTreeNode currentNode = root;
 
         while (!currentNode.leaf) {
             currentNode = currentNode.children.get(currentNode.n);
         }
 
-        return currentNode.keys.get(currentNode.n - 1).key;
+        return Optional.ofNullable(currentNode.keys.get(Math.max(0, currentNode.n - 1))).map(v -> v.key);
     }
 
     public void insert(final NodeType k) {
@@ -497,13 +497,13 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
         }
 
         @Override
-        public NodeType getMinValue() {
-            return tree.getMinValue();
+        public Optional<NodeType> getMin() {
+            return tree.getMin();
         }
 
         @Override
-        public NodeType getMaxValue() {
-            return tree.getMaxValue();
+        public Optional<NodeType> getMax() {
+            return tree.getMax();
         }
     }
 }
