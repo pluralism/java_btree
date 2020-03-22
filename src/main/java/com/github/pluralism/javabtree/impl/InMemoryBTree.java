@@ -1,6 +1,8 @@
 package com.github.pluralism.javabtree.impl;
 
 import com.github.pluralism.javabtree.BTree;
+import com.github.pluralism.javabtree.utils.TailCall;
+import com.github.pluralism.javabtree.utils.TailCalls;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +19,7 @@ import java.util.Optional;
  * <p>
  *  @see <a href="https://en.wikipedia.org/wiki/B-tree">B-tree (Wikipedia)</a>
  *  <br>
- *  @author André Pinheiro
+ *  @author André Pinheiro <andrepdpinheiro@gmail.com>
  * </p>
  */
 public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
@@ -130,66 +132,68 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
 
     public void delete(final NodeType k) {
         if (contains(k)) {
-            delete(root, new BTreeNodeEntry(k));
+            delete(root, new BTreeNodeEntry(k)).run();
         }
     }
 
-    private void delete(final BTreeNode x, final BTreeNodeEntry k) {
-        if (x.leaf) {
-            deleteFromLeafNode(x, k);
-            return;
-        }
+    private TailCall<Void> delete(final BTreeNode x, final BTreeNodeEntry k) {
+        return () -> {
+            if (x.leaf) {
+                deleteFromLeafNode(x, k);
+                return TailCalls.done(null);
+            }
 
-        int i = 0;
-        while (i < x.n && x.keys.get(i).compareTo(k) < 0) {
-            i++;
-        }
+            int i = 0;
+            while (i < x.n && x.keys.get(i).compareTo(k) < 0) {
+                i++;
+            }
 
-        // The key "k" is in node "x" and "x" is an internal node (non-leaf node).
-        if (i < x.n && x.keys.get(i).compareTo(k) == 0) {
-            if (x.children.get(i).n >= T) {
-                // Find the predecessor "k'" of "k" in the subtree rooted at "y" (x.children[i])
-                final BTreeNodeEntry predecessor = findPredecessor(x.children.get(i));
-                x.keys.set(i, predecessor); // replace "k" by "k'"
-                delete(x.children.get(i), predecessor); // recursively delete "k'"
+            // The key "k" is in node "x" and "x" is an internal node (non-leaf node).
+            if (i < x.n && x.keys.get(i).compareTo(k) == 0) {
+                if (x.children.get(i).n >= T) {
+                    // Find the predecessor "k'" of "k" in the subtree rooted at "y" (x.children[i])
+                    final BTreeNodeEntry predecessor = findPredecessor(x.children.get(i));
+                    x.keys.set(i, predecessor); // replace "k" by "k'"
+                    return delete(x.children.get(i), predecessor); // recursively delete "k'"
+                }
+                /*
+                 * If "y" (x.children[i]) has fewer than T keys, examine the child "z" (x.children[i + 1]) that follows
+                 * "k" (x.key[i]) in node "x".
+                 * If "z" (x.children[i + 1]) has at least T keys, then find the successor "k'" of "k" in the subtree
+                 * rooted at "z" (x.children[i + 1]). Recursively delete "k'", and replace k by "k'" in "x".
+                 */
+                else if (x.children.get(i + 1).n >= T) {
+                    final BTreeNodeEntry successor = findSuccessor(x.children.get(i + 1));
+                    x.keys.set(i, successor);
+                    return delete(x.children.get(i + 1), successor);
+                }
+                /*
+                 * Otherwise, if both "y" (x.children[i]) and "z" (x.children[i + 1]) have less than T keys, merge "k" and
+                 * all of "z" (x.children[i + 1]) into "y" (x.children[i]), so that "x" loses both "k" and
+                 * the pointer to "z" (x.children[i + 1]), and y (x.children[i]) now contains 2T - 1 keys.
+                 * Finally free "z" (x.children[i + 1]) and recursively delete "k" from "y" (x.children[i]).
+                 */
+                else {
+                    merge(x, i);
+                    return delete(x.children.get(i), k);
+                }
             }
             /*
-             * If "y" (x.children[i]) has fewer than T keys, examine the child "z" (x.children[i + 1]) that follows
-             * "k" (x.key[i]) in node "x".
-             * If "z" (x.children[i + 1]) has at least T keys, then find the successor "k'" of "k" in the subtree
-             * rooted at "z" (x.children[i + 1]). Recursively delete "k'", and replace k by "k'" in "x".
-             */
-            else if (x.children.get(i + 1).n >= T) {
-                final BTreeNodeEntry successor = findSuccessor(x.children.get(i + 1));
-                x.keys.set(i, successor);
-                delete(x.children.get(i + 1), successor);
-            }
-            /*
-             * Otherwise, if both "y" (x.children[i]) and "z" (x.children[i + 1]) have less than T keys, merge "k" and
-             * all of "z" (x.children[i + 1]) into "y" (x.children[i]), so that "x" loses both "k" and
-             * the pointer to "z" (x.children[i + 1]), and y (x.children[i]) now contains 2T - 1 keys.
-             * Finally free "z" (x.children[i + 1]) and recursively delete "k" from "y" (x.children[i]).
+             * If the key "k" is not present in internal node "x", determine the root x.children[i] of the appropriate
+             * subtree that must contain "k". If x.children[i] has only T - 1 keys (minimum), we need to perform additional
+             * steps to guarantee that we descend to a node containing at least T keys.
              */
             else {
-                merge(x, i);
-                delete(x.children.get(i), k);
-            }
-        }
-        /*
-         * If the key "k" is not present in internal node "x", determine the root x.children[i] of the appropriate
-         * subtree that must contain "k". If x.children[i] has only T - 1 keys (minimum), we need to perform additional
-         * steps to guarantee that we descend to a node containing at least T keys.
-         */
-        else {
-            BTreeNode newChild = x.children.get(i);
-            if (x.children.get(i).n < T) {
-                // Delete from a sibling if x.children[i] has only T - 1 keys.
-                newChild = deleteFromSibling(x, i);
-            }
+                BTreeNode newChild = x.children.get(i);
+                if (x.children.get(i).n < T) {
+                    // Delete from a sibling if x.children[i] has only T - 1 keys.
+                    newChild = deleteFromSibling(x, i);
+                }
 
-            // Finish by recursing on the appropriate child of "x"
-            delete(newChild, k);
-        }
+                // Finish by recursing on the appropriate child of "x"
+                return delete(newChild, k);
+            }
+        };
     }
 
     private void deleteFromLeafNode(final BTreeNode x, final BTreeNodeEntry k) {
@@ -340,22 +344,24 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
     }
 
     public Optional<SearchNodeResult> searchNode(final NodeType k) {
-        return searchNode(root, new BTreeNodeEntry(k));
+        return searchNode(root, new BTreeNodeEntry(k)).run();
     }
 
-    private Optional<SearchNodeResult> searchNode(final BTreeNode node, final BTreeNodeEntry k) {
-        int i = 0;
-        while (i < node.n && k.compareTo(node.keys.get(i)) > 0) {
-            i++;
-        }
+    private TailCall<Optional<SearchNodeResult>> searchNode(final BTreeNode node, final BTreeNodeEntry k) {
+        return () -> {
+            int i = 0;
+            while (i < node.n && k.compareTo(node.keys.get(i)) > 0) {
+                i++;
+            }
 
-        if (i < node.n && k.compareTo(node.keys.get(i)) == 0) {
-            return Optional.of(new SearchNodeResult(node, i));
-        } else if (node.leaf) {
-            return Optional.empty();
-        }
+            if (i < node.n && k.compareTo(node.keys.get(i)) == 0) {
+                return TailCalls.done(Optional.of(new SearchNodeResult(node, i)));
+            } else if (node.leaf) {
+                return TailCalls.done(Optional.empty());
+            }
 
-        return searchNode(node.children.get(i), k);
+            return searchNode(node.children.get(i), k);
+        };
     }
 
     public Optional<NodeType> getMin() {
