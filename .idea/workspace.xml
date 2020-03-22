@@ -209,7 +209,7 @@
       <workItem from="1584796826572" duration="1928000" />
       <workItem from="1584799618619" duration="887000" />
       <workItem from="1584805836817" duration="37000" />
-      <workItem from="1584878649882" duration="814000" />
+      <workItem from="1584878649882" duration="1091000" />
     </task>
     <task id="LOCAL-00001" summary="Add missing javadoc. Add missing tests.">
       <created>1584734140168</created>
@@ -288,7 +288,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584800492100</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Replace Stack by recursion on searchNode() method.">
+      <created>1584879561312</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1584879561312</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -304,7 +311,8 @@
     <MESSAGE value="Add README" />
     <MESSAGE value="add missing plugin" />
     <MESSAGE value="update .travis.yml" />
-    <option name="LAST_COMMIT_MESSAGE" value="update .travis.yml" />
+    <MESSAGE value="Replace Stack by recursion on searchNode() method." />
+    <option name="LAST_COMMIT_MESSAGE" value="Replace Stack by recursion on searchNode() method." />
   </component>
   <component name="WindowStateProjectService">
     <state x="540" y="186" width="800" height="684" key="#Project_Structure" timestamp="1584730857480">
@@ -346,10 +354,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="711" y="265" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040@0.0.1920.1040" timestamp="1584793240710" />
-    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584800491546">
+    <state x="492" y="210" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584879560418">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584800491546" />
+    <state x="492" y="210" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584879560418" />
     <state width="1847" height="562" key="DebuggerActiveHint" timestamp="1584788776585">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -419,10 +427,14 @@
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
     <state x="801" y="490" width="377" height="133" key="ReplaceDuplicatesPrompt/70.27.1850.1053@70.27.1850.1053" timestamp="1584135390944" />
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584800493080">
+    <state x="463" y="165" key="SettingsEditor" timestamp="1584879640906">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584800493080" />
+    <state x="463" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1584879640906" />
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584879562561">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584879562561" />
     <state x="0" y="350" key="com.intellij.ide.util.TipDialog" timestamp="1584805855049">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
