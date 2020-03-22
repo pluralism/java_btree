@@ -341,28 +341,22 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
     }
 
     public Optional<SearchNodeResult> searchNode(final NodeType k) {
-        final BTreeNodeEntry nodeEntry = new BTreeNodeEntry(k);
-        final Stack<BTreeNode> stack = new Stack<>();
-        stack.push(root);
+        return searchNode(root, new BTreeNodeEntry(k));
+    }
 
-        while (!stack.isEmpty()) {
-            final BTreeNode currentNode = stack.pop();
-
-            int i = 0;
-            while (i < currentNode.n && nodeEntry.compareTo(currentNode.keys.get(i)) > 0) {
-                i++;
-            }
-
-            if (i < currentNode.n && nodeEntry.compareTo(currentNode.keys.get(i)) == 0) {
-                return Optional.of(new SearchNodeResult(currentNode, i));
-            } else if (currentNode.leaf) {
-                return Optional.empty();
-            }
-
-            stack.push(currentNode.children.get(i));
+    private Optional<SearchNodeResult> searchNode(final BTreeNode node, final BTreeNodeEntry k) {
+        int i = 0;
+        while (i < node.n && k.compareTo(node.keys.get(i)) > 0) {
+            i++;
         }
 
-        return Optional.empty();
+        if (i < node.n && k.compareTo(node.keys.get(i)) == 0) {
+            return Optional.of(new SearchNodeResult(node, i));
+        } else if (node.leaf) {
+            return Optional.empty();
+        }
+
+        return searchNode(node.children.get(i), k);
     }
 
     public Optional<NodeType> getMin() {

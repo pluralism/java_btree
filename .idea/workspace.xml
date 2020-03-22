@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1c81c01e-681a-455a-a46c-f2be0bc931bd" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pluralism/javabtree/impl/InMemoryBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pluralism/javabtree/impl/InMemoryBTree.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -208,7 +207,9 @@
       <workItem from="1584730801890" duration="3330000" />
       <workItem from="1584788425574" duration="4151000" />
       <workItem from="1584796826572" duration="1928000" />
-      <workItem from="1584799618619" duration="862000" />
+      <workItem from="1584799618619" duration="887000" />
+      <workItem from="1584805836817" duration="37000" />
+      <workItem from="1584878649882" duration="814000" />
     </task>
     <task id="LOCAL-00001" summary="Add missing javadoc. Add missing tests.">
       <created>1584734140168</created>
@@ -280,7 +281,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584800065780</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="update .travis.yml">
+      <created>1584800492100</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1584800492100</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -338,20 +346,20 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="711" y="265" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040@0.0.1920.1040" timestamp="1584793240710" />
-    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584800065249">
+    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584800491546">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584800065249" />
+    <state x="314" y="118" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584800491546" />
     <state width="1847" height="562" key="DebuggerActiveHint" timestamp="1584788776585">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1847" height="562" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1584788776585" />
     <state width="550" height="583" key="DebuggerActiveHint/1278.1080.1920.1080/1348.0.572.1080@1348.0.572.1080" timestamp="1584525610564" />
     <state width="485" height="568" key="DebuggerActiveHint/70.27.1850.1053@70.27.1850.1053" timestamp="1584292831929" />
-    <state x="739" y="277" width="424" height="491" key="FileChooserDialogImpl" timestamp="1584733331819">
+    <state x="739" y="277" width="424" height="491" key="FileChooserDialogImpl" timestamp="1584805872048">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="739" y="277" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1584733331819" />
+    <state x="739" y="277" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1584805872048" />
     <state x="2013" y="1371" width="424" height="491" key="FileChooserDialogImpl/1278.1080.1920.1080/1348.0.572.1080@1278.1080.1920.1080" timestamp="1584461701827" />
     <state x="743" y="298" width="424" height="491" key="FileChooserDialogImpl/1278.1080.1920.1080/1348.0.572.1080@1348.0.572.1080" timestamp="1584614964190" />
     <state x="778" y="311" width="447" height="491" key="FileChooserDialogImpl/70.27.1850.1053@70.27.1850.1053" timestamp="1584390772170" />
@@ -411,14 +419,14 @@
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
     <state x="801" y="490" width="377" height="133" key="ReplaceDuplicatesPrompt/70.27.1850.1053@70.27.1850.1053" timestamp="1584135390944" />
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584800066825">
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584800493080">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584800066825" />
-    <state x="0" y="350" key="com.intellij.ide.util.TipDialog" timestamp="1584799623985">
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584800493080" />
+    <state x="0" y="350" key="com.intellij.ide.util.TipDialog" timestamp="1584805855049">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="0" y="350" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584799623985" />
+    <state x="0" y="350" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584805855049" />
     <state x="1348" y="363" key="com.intellij.ide.util.TipDialog/1278.1080.1920.1080/1348.0.572.1080@1278.1080.1920.1080" timestamp="1584459436187" />
     <state x="1348" y="363" key="com.intellij.ide.util.TipDialog/1278.1080.1920.1080/1348.0.572.1080@1348.0.572.1080" timestamp="1584614937472" />
     <state x="651" y="381" key="com.intellij.ide.util.TipDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1584390261917" />
