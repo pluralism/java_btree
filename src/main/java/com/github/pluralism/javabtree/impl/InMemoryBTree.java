@@ -427,7 +427,6 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
             node.children.set(j + 1, node.children.get(j));
             node.children.set(j, null);
         }
-
         node.children.set(childIndex + 1, z);
 
         for (int j = node.n - 1; j >= childIndex; j--) {

@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c81c01e-681a-455a-a46c-f2be0bc931bd" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/pluralism/javabtree/utils/TailCall.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/pluralism/javabtree/utils/TailCalls.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pluralism/javabtree/impl/InMemoryBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pluralism/javabtree/impl/InMemoryBTree.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +209,7 @@
       <workItem from="1584799618619" duration="887000" />
       <workItem from="1584805836817" duration="37000" />
       <workItem from="1584878649882" duration="9553000" />
-      <workItem from="1584892784233" duration="63000" />
+      <workItem from="1584892784233" duration="780000" />
     </task>
     <task id="LOCAL-00001" summary="Add missing javadoc. Add missing tests.">
       <created>1584734140168</created>
@@ -305,7 +302,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584879753086</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Add support for tail recursion (#1). Refactored existing methods to use tail recursion instead of head recursion.">
+      <created>1584893020532</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1584893020532</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -323,7 +327,8 @@
     <MESSAGE value="update .travis.yml" />
     <MESSAGE value="Replace Stack by recursion on searchNode() method." />
     <MESSAGE value="Remove unused Stack import" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove unused Stack import" />
+    <MESSAGE value="Add support for tail recursion (#1). Refactored existing methods to use tail recursion instead of head recursion." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add support for tail recursion (#1). Refactored existing methods to use tail recursion instead of head recursion." />
   </component>
   <component name="WindowStateProjectService">
     <state x="540" y="186" width="800" height="684" key="#Project_Structure" timestamp="1584730857480">
@@ -366,10 +371,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="711" y="265" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040@0.0.1920.1040" timestamp="1584793240710" />
-    <state x="492" y="210" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584879752310">
+    <state x="421" y="145" width="1144" height="803" key="CommitChangelistDialog2" timestamp="1584893019612">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="492" y="210" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584879752310" />
+    <state x="421" y="145" width="1144" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584893019612" />
     <state width="1847" height="562" key="DebuggerActiveHint" timestamp="1584891631239">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -443,14 +448,14 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="463" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1584879640906" />
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584879754926">
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2" timestamp="1584893022008">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584879754926" />
-    <state x="0" y="350" key="com.intellij.ide.util.TipDialog" timestamp="1584892783868">
+    <state x="552" y="256" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584893022008" />
+    <state x="0" y="350" key="com.intellij.ide.util.TipDialog" timestamp="1584893882959">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="0" y="350" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584892783868" />
+    <state x="0" y="350" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584893882959" />
     <state x="1348" y="363" key="com.intellij.ide.util.TipDialog/1278.1080.1920.1080/1348.0.572.1080@1278.1080.1920.1080" timestamp="1584459436187" />
     <state x="1348" y="363" key="com.intellij.ide.util.TipDialog/1278.1080.1920.1080/1348.0.572.1080@1348.0.572.1080" timestamp="1584614937472" />
     <state x="651" y="381" key="com.intellij.ide.util.TipDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1584390261917" />
