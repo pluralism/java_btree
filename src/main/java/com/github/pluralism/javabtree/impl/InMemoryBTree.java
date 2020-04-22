@@ -147,50 +147,27 @@ public class InMemoryBTree<NodeType extends Comparable<NodeType>> {
             while (i < x.n && x.keys.get(i).compareTo(k) < 0) {
                 i++;
             }
-
-            // The key "k" is in node "x" and "x" is an internal node (non-leaf node).
+            
             if (i < x.n && x.keys.get(i).compareTo(k) == 0) {
                 if (x.children.get(i).n >= T) {
                     // Find the predecessor "k'" of "k" in the subtree rooted at "y" (x.children[i])
                     final BTreeNodeEntry predecessor = findPredecessor(x.children.get(i));
                     x.keys.set(i, predecessor); // replace "k" by "k'"
                     return delete(x.children.get(i), predecessor); // recursively delete "k'"
-                }
-                /*
-                 * If "y" (x.children[i]) has fewer than T keys, examine the child "z" (x.children[i + 1]) that follows
-                 * "k" (x.key[i]) in node "x".
-                 * If "z" (x.children[i + 1]) has at least T keys, then find the successor "k'" of "k" in the subtree
-                 * rooted at "z" (x.children[i + 1]). Recursively delete "k'", and replace k by "k'" in "x".
-                 */
-                else if (x.children.get(i + 1).n >= T) {
+                } else if (x.children.get(i + 1).n >= T) {
                     final BTreeNodeEntry successor = findSuccessor(x.children.get(i + 1));
                     x.keys.set(i, successor);
                     return delete(x.children.get(i + 1), successor);
-                }
-                /*
-                 * Otherwise, if both "y" (x.children[i]) and "z" (x.children[i + 1]) have less than T keys, merge "k" and
-                 * all of "z" (x.children[i + 1]) into "y" (x.children[i]), so that "x" loses both "k" and
-                 * the pointer to "z" (x.children[i + 1]), and y (x.children[i]) now contains 2T - 1 keys.
-                 * Finally free "z" (x.children[i + 1]) and recursively delete "k" from "y" (x.children[i]).
-                 */
-                else {
+                } else {
                     merge(x, i);
                     return delete(x.children.get(i), k);
                 }
-            }
-            /*
-             * If the key "k" is not present in internal node "x", determine the root x.children[i] of the appropriate
-             * subtree that must contain "k". If x.children[i] has only T - 1 keys (minimum), we need to perform additional
-             * steps to guarantee that we descend to a node containing at least T keys.
-             */
-            else {
+            } else {
                 BTreeNode newChild = x.children.get(i);
                 if (x.children.get(i).n < T) {
-                    // Delete from a sibling if x.children[i] has only T - 1 keys.
                     newChild = deleteFromSibling(x, i);
                 }
 
-                // Finish by recursing on the appropriate child of "x"
                 return delete(newChild, k);
             }
         };
